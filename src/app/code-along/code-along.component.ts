@@ -1,6 +1,6 @@
 import { Component, ElementRef, viewChild } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { filter, map } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { filter, fromEvent, map, share, switchMap, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-code-along',
@@ -16,9 +16,34 @@ export class CodeAlongComponent {
     map(elementRef => elementRef.nativeElement)
   );
 
+  readonly dragStart = this.draggableAvailable.pipe(
+    switchMap(element => fromEvent(element, 'mousedown'))
+  );
+
+  readonly dragMove = fromEvent(document, 'mousemove').pipe(
+    share()
+  );
+
+  readonly dragEnd = fromEvent(document, 'mouseup');
+
+  readonly drag = this.dragStart.pipe(
+    switchMap(() => this.dragMove.pipe(
+      takeUntil(this.dragEnd)
+    ))
+  );
+
+  readonly positionOfDraggable = toSignal(
+    this.drag.pipe(
+      map(event => {
+        const typedEvent = event as MouseEvent;
+        return {x: typedEvent.x, y: typedEvent.y};
+      })
+    ), {initialValue: {x: 0, y: 0}}
+  )
+
   constructor() {
-    this.draggableAvailable.subscribe(draggable => {
-      console.log('draggable available', draggable);
-    });
+    this.drag.subscribe(event => {
+      console.log('dragging', event);
+    })
   }
 }

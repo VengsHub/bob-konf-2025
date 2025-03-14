@@ -11,20 +11,27 @@ import { filter, fromEvent, map, merge, of, scan, startWith, switchMap } from 'r
   styleUrl: './tab-bar.component.scss'
 })
 export class TabBarComponent {
-
   readonly newTabButton = viewChild<ElementRef<HTMLButtonElement>>('newTabButton');
-
   readonly newTabButtonAvailable = toObservable(this.newTabButton).pipe(
     filter(elementRef => !!elementRef),
     map(elementRef => elementRef.nativeElement)
   );
-
   readonly addNewTabEvent = this.newTabButtonAvailable.pipe(
     switchMap(element => fromEvent(element, 'click')),
     map(() => (tabs: string[]) => [...tabs, 'new tab'])
   );
 
-  readonly updateEvents = merge(this.addNewTabEvent);
+  readonly removeTabButton = viewChild<ElementRef<HTMLButtonElement>>('removeTabButton');
+  readonly removeTabButtonAvailable = toObservable(this.removeTabButton).pipe(
+    filter(elementRef => !!elementRef),
+    map(elementRef => elementRef.nativeElement)
+  );
+  readonly removeTabEvent = this.removeTabButtonAvailable.pipe(
+    switchMap(element => fromEvent(element, 'click')),
+    map(() => (tabs: string[]) => tabs.slice(0, tabs.length - 1))
+  );
+
+  readonly updateEvents = merge(this.addNewTabEvent, this.removeTabEvent);
 
   readonly tabs = toSignal(
     this.httpGetTabs().pipe(
@@ -39,7 +46,6 @@ export class TabBarComponent {
       )
     ), {initialValue: []}
   );
-
 
   readonly windowWidth = toSignal(
     fromEvent(window, 'resize').pipe(

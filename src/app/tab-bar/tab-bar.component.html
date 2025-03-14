@@ -16,4 +16,8 @@
   <button #newTabButton>
     <img src="assets/plus-circle.svg" alt="Close" width="30" height="30">
   </button>
+
+  <button #removeTabButton [disabled]="!tabs().length">
+    -
+  </button>
 </nav>
