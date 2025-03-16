@@ -1,23 +1,10 @@
 <nav class="tab-bar">
-  @for (tab of tabs(); track tab; let index = $index) {
-    @if (index < visibleTabsLimit()) {
-      <div [style.width]="tabWidth() + 'px'">
-        <img src="assets/globe-1.svg" alt="Tab">
-        <span>{{ tab }}</span>
-      </div>
-    }
+  @for (tab of tabs(); track tab) {
+    <div [style.width]="tabWidth() + 'px'">
+      <img src="assets/globe-1.svg" alt="Tab">
+      <span>{{ tab }}</span>
+    </div>
   }
-
-  @if (tabs().length > visibleTabsLimit()) {
-    <button class="overflow-menu-button">
-      <span>{{ tabs().length - visibleTabsLimit() }} Tabs</span>
-    </button>
-  }
-  <button #newTabButton>
-    <img src="assets/plus-circle.svg" alt="Close" width="30" height="30">
-  </button>
-
-  <button #removeTabButton [disabled]="!tabs().length">
-    -
-  </button>
+  <button #newTabButton>+</button>
+  <button #removeTabButton [disabled]="!tabs().length">-</button>
 </nav>

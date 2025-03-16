@@ -38,6 +38,7 @@ export class TabBarComponent {
     ), {initialValue: []}
   );
 
+
   readonly windowWidth = toSignal(
     fromEvent(window, 'resize').pipe(
       map(() => window.innerWidth)
@@ -53,10 +54,6 @@ export class TabBarComponent {
     if (responsiveWidth > 280) return 280;
     return responsiveWidth;
   });
-
-  readonly visibleTabsLimit = computed(() =>
-    Math.floor(this.windowWidth() / this.tabWidth())
-  );
 
   httpGetTabs() {
     return of(['tab1', 'tab2', 'reallyLongTabName', 'tab3', 'tab4', 'reallyLongTabNameThatIsEvenLonger']);
