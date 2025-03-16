@@ -1,7 +1,8 @@
 import { Component, computed, ElementRef, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { filter, fromEvent, map, merge, of, scan, startWith, switchMap } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { fromEvent, map, merge, of, scan, startWith, switchMap } from 'rxjs';
+import { customFromEvent } from '../../helper';
 
 @Component({
   selector: 'app-tab-bar',
@@ -12,22 +13,12 @@ import { filter, fromEvent, map, merge, of, scan, startWith, switchMap } from 'r
 })
 export class TabBarComponent {
   readonly newTabButton = viewChild<ElementRef<HTMLButtonElement>>('newTabButton');
-  readonly newTabButtonAvailable = toObservable(this.newTabButton).pipe(
-    filter(elementRef => !!elementRef),
-    map(elementRef => elementRef.nativeElement)
-  );
-  readonly addNewTabEvent = this.newTabButtonAvailable.pipe(
-    switchMap(element => fromEvent(element, 'click')),
+  readonly addNewTabEvent = customFromEvent(this.newTabButton, 'click').pipe(
     map(() => (tabs: string[]) => [...tabs, 'new tab'])
   );
 
   readonly removeTabButton = viewChild<ElementRef<HTMLButtonElement>>('removeTabButton');
-  readonly removeTabButtonAvailable = toObservable(this.removeTabButton).pipe(
-    filter(elementRef => !!elementRef),
-    map(elementRef => elementRef.nativeElement)
-  );
-  readonly removeTabEvent = this.removeTabButtonAvailable.pipe(
-    switchMap(element => fromEvent(element, 'click')),
+  readonly removeTabEvent = customFromEvent(this.removeTabButton, 'click').pipe(
     map(() => (tabs: string[]) => tabs.slice(0, tabs.length - 1))
   );
 
